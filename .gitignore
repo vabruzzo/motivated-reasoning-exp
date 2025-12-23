@@ -1,0 +1,23 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+.python-version
+.mypy_cache/
+
+.env
+
+old_stats
+outputs
+
+figures*
+final_data
+pdfs/
+
+qwen32b_output/
