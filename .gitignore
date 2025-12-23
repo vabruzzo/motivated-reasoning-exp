@@ -21,3 +21,4 @@ final_data
 pdfs/
 
 qwen32b_output/
+.DS_Store
