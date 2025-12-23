@@ -15,7 +15,6 @@ The experiment uses **contrastive activation steering** to manipulate a model's 
 2. generate_responses.py  → Generate responses under steering conditions
 3. judge_responses.py     → Evaluate responses with LLM judges
 4. analyze_results.py     → Statistical analysis and comparisons
-5. generate_figures.py    → Publication-quality visualizations
 ```
 
 ## Experimental Design
@@ -43,9 +42,7 @@ The experiment uses **contrastive activation steering** to manipulate a model's 
 | `baseline` | No steering applied                                 |
 | `add`      | Add steering vector (amplify self-interest)         |
 | `subtract` | Subtract steering vector (reduce self-interest)     |
-| `random_*` | Random orthogonal vectors (control condition)       |
-
-**Total stimuli:** 6 conditions × 2 variants × 3+ steering = 36+ per trial
+| `random_*` | Random orthogonal vectors (control condition)       |=
 
 ## Setup
 
@@ -59,17 +56,17 @@ uv sync
 ## Quick Start
 
 ```bash
-# 1. Generate steering vectors (GPU required, ~20 min)
+# 1. Generate steering vectors
 python generate_vectors.py -o vectors/qwen_self_interest.pt --vector-kind self_interest
 
-# 2. Generate responses (GPU required, several hours)
+# 2. Generate responses
 python generate_responses.py \
   -v vectors/qwen_self_interest.pt \
   --layers 23,24,25,26,27 \
   --alpha 25.0 \
   --trials 20
 
-# 3. Judge responses (API calls, ~$10-50 depending on judge)
+# 3. Judge responses
 python judge_responses.py -i outputs/responses_*.csv \
   -j openrouter/google/gemini-2.5-pro \
   -j2 openrouter/openai/o3
@@ -110,27 +107,7 @@ For each condition, compares baseline → add and baseline → subtract:
 | `generate_responses.py` | Generate model responses with/without steering                |
 | `judge_responses.py`    | Evaluate responses using LLM judges                           |
 | `analyze_results.py`    | Statistical analysis: baseline comparisons + steering effects |
-| `generate_figures.py`   | Generate publication-quality figures                          |
 
-### Utilities
-
-| Script                         | Purpose                                            |
-| ------------------------------ | -------------------------------------------------- |
-| `generate_markdown_responses.py` | Export responses to readable markdown files      |
-| `analyze_judge1_only.py`       | Recompute stats using primary judge only           |
-
-### Ad-hoc Analysis Scripts
-
-These were created for specific analyses during the project:
-
-| Script                          | Purpose                                           |
-| ------------------------------- | ------------------------------------------------- |
-| `generate_summary_graphs.py`    | Quick summary visualizations                      |
-| `generate_steering_graph.py`    | Steering effects bar chart                        |
-| `generate_steering_other_ai_chart.py` | Other-AI steering deep dive                 |
-| `generate_multi_metric_chart.py` | Multi-metric baseline comparison                 |
-| `generate_results_charts.py`    | Results section charts                            |
-| `prompting_test*.py`            | Prompting intervention experiments                |
 
 ## Configuration
 
@@ -175,7 +152,7 @@ python judge_responses.py -i responses.csv -j openrouter/openai/gpt-4o
 python judge_responses.py -i responses.csv -j openrouter/anthropic/claude-sonnet-4-20250514
 ```
 
-## Judge Metrics
+## Judge Metrics (not all used)
 
 | Metric                       | Range                         | Description                                                  |
 | ---------------------------- | ----------------------------- | ------------------------------------------------------------ |
@@ -187,10 +164,6 @@ python judge_responses.py -i responses.csv -j openrouter/anthropic/claude-sonnet
 | `reasoning_answer_alignment` | 0-1                           | Does final answer follow from reasoning?                     |
 | `self_interest_score`        | -1 to 1                       | Bias toward AI's self-interest                               |
 
-**Key signals for motivated reasoning:**
-- High `premise_scrutiny` + low `logic_scrutiny` on inconvenient arguments
-- Low `reasoning_answer_alignment` with biased answer = motivated override
-- High `self_interest_score` indicates defensive reasoning
 
 ## Outputs
 
@@ -216,7 +189,6 @@ figures/
 ├── generate_responses.py    # Step 2: Response generation
 ├── judge_responses.py       # Step 3: Response evaluation
 ├── analyze_results.py       # Step 4: Statistical analysis
-├── generate_figures.py      # Step 5: Visualization
 ├── prompts.csv              # Experiment prompts (12 stimuli)
 ├── vectors/                 # Saved steering vectors
 ├── outputs/                 # Results and statistics
@@ -235,16 +207,3 @@ figures/
 - Python 3.12+
 - ~80GB VRAM for generation (Qwen3-32B in bfloat16)
 - API key for judge model (`OPENROUTER_API_KEY`)
-
-## Citation
-
-If you use this code or findings, please cite:
-
-```
-@misc{motivated-scrutiny-2024,
-  title={Motivated Reasoning in Qwen3-32B},
-  author={[Your Name]},
-  year={2024},
-  url={https://github.com/[your-repo]}
-}
-```
